@@ -247,3 +247,20 @@ a.secondary {
 .endAuctionButton:hover {
   background-color: #f2f2f2;
 }
+
+
+.openDisputeButton {
+  padding: 10px 20px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.openDisputeButton:hover {
+  text-decoration: underline;
+}
+
+
+.br {
+  margin-bottom: 50px;
+}

@@ -1,95 +1,96 @@
-import Image from "next/image";
+"use client";
+
+import React from "react";
 import styles from "./page.module.css";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const router = useRouter();
+  const [timeRemaining, setTimeRemaining] = React.useState(
+    6 * 60 * 60 + 46 * 60
+  );
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeRemaining((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h}h ${m}m ${s}s`;
+  };
+
+  async function handleEndAuction() {
+    console.log("Ending auction");
+    if (window.ethereum) {
+      console.log("MetaMask is installed!");
+      try {
+        window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        router.push("/contracts");
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      console.log("MetaMask is not installed.");
+      alert(
+        "MetaMask is not installed. Please install it to use this application."
+      );
+    }
+  }
+
+  return (
+    <main className={styles.main}>
+      <h1 className={styles.title}>Your Auctions</h1>
+      <div className={styles.auctionPanel}>
+        <h2 className={styles.auctionTitle}>
+          Looking for a Carpenter to Repair Furniture
+        </h2>
+        <p className={styles.auctionDescription}>
+          The table has broken legs that need to be reattached or replaced, and
+          the chairs have loose joints that require tightening or re-gluing. The
+          furniture is antique, so the work needs to be done carefully to
+          maintain its original condition and aesthetic.
+        </p>
+        <div className={styles.auctionDetails}>
+          <div className={styles.auctionImageColumn}>
+            <p className={styles.auctionImageText}>
+              Rua: Rua das Acacias Bairro: Trindade, 1420 Florianópolis-SC -
+              88000-400
+            </p>
             <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              src="/furniture.png"
+              alt="Furniture.PNG"
+              className={styles.auctionImage}
+              width={100}
+              height={100}
             />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+          </div>
+          <div className={styles.auctionInfoColumn}>
+            <p className={styles.auctionOwner}>Current Owner: José</p>
+            <p className={styles.auctionBid}>Current bid: R$60,00</p>
+            <div className={styles.auctionTimerContainer}>
+              <p className={styles.auctionTimer}>Remaining time:</p>
+              <span className={styles.clock}>
+                🕒 {formatTime(timeRemaining)}
+              </span>
+            </div>
+            <button
+              className={styles.endAuctionButton}
+              onClick={handleEndAuction}
+            >
+              End Auction
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+    </main>
   );
 }
